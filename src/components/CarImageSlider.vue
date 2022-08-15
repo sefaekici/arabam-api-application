@@ -7,8 +7,8 @@
     <ol class="carousel-indicators">
       <li
         data-target="#carouselExampleIndicators"
-        data-slide-to="0"
-        :class="{ active: activeElementIndex == index }"
+        :data-slide-to="index"
+        :class="{ 'active': activeElementIndex == index }"
         v-for="(image, index) in carImages"
         :key="index"
       ></li>
@@ -18,7 +18,7 @@
         v-for="(image, index) in carImages"
         :key="index"
         class="carousel-item d-flex align-items-center"
-        :class="{ active: activeElementIndex == index }"
+        :class="{ 'active': activeElementIndex == index }"
       >
         <img
           @click="setActiveImageSource(image)"
@@ -34,6 +34,7 @@
       type="button"
       data-target="#carouselExampleIndicators"
       data-slide="prev"
+      @click="setActiveSlide(-1)"
     >
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
       <span class="sr-only">Previous</span>
@@ -43,41 +44,20 @@
       type="button"
       data-target="#carouselExampleIndicators"
       data-slide="next"
+      @click="setActiveSlide(1)"
     >
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="sr-only">Next</span>
     </button>
 
-    <div
-      class="modal fade"
-      id="imageFullScreenModal"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body d-flex align-items-center justify-content-center">
-            <img :src="activeImageSource" class="modal-image" />
-          </div>
-        </div>
-      </div>
-    </div>
+    <image-full-screen-modal :activeImageSource="activeImageSource"></image-full-screen-modal>
   </div>
 </template>
 
 <script>
+import ImageFullScreenModal from './ImageFullScreenModal.vue';
 export default {
+  components: { ImageFullScreenModal },
   props: ["carImages"],
   data() {
     return {
@@ -89,14 +69,37 @@ export default {
     setActiveImageSource(image) {
       this.activeImageSource = image.replace("{0}", "800x600");
     },
+    setActiveSlide(val){
+      if(val==-1){
+        if(this.activeElementIndex==0){
+          this.activeElementIndex=this.carImages.length-1;
+        }
+        else{
+          this.activeElementIndex=this.carImages-1;
+        }
+      }
+      else{
+        if(this.activeElementIndex==this.carImages.length-1){
+          this.activeElementIndex=0;
+        }
+        else{
+          this.activeElementIndex=this.carImages+1;
+        }
+      }
+    }
   },
 };
 </script>
 
-<style>
+<style lang="scss">
 .car-image {
   max-width: 100%;
   max-height: 100%;
+  cursor: pointer;
+  transition: .3s all;
+  &:hover{
+    transform: scale(1.01);
+  }
 }
 
 .modal-image{

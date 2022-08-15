@@ -1,5 +1,5 @@
 <template>
-    <div class="row">
+    <div class="row m-0">
         <div class="col-12">
             <loading-spinner v-if="!load"></loading-spinner>
             <div v-else class="container">
@@ -48,7 +48,6 @@ export default {
             carDetail:{},
             load:false,
             carImages:[],
-        
         }
     },
     components:{
@@ -57,7 +56,7 @@ export default {
     async mounted() {
         let {data}=await this.$http.get(`detail?id=${this.$route.params.id}`)
         this.carDetail=data;
-        this.carImages=data.photos;
+        this.carImages=await data.photos;
         this.load=true;
     },
 }
